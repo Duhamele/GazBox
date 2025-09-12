@@ -37,6 +37,7 @@ pris connaissance de la licence CeCILL, et que vous en avez accepté les
 termes.
  */
 
+mod frame;
 
 use eframe::egui;
 use std::f32::consts::PI;
@@ -88,22 +89,17 @@ impl eframe::App for MyApp {
                     });
                 }
             }
-        });
 
+        });
+        
         ctx.request_repaint(); // redessiner en continu
     }
 }
-
+use frame::frame_main;
 fn main() {
     env_logger::init();
 
-    let app = MyApp {
-        t: 0.0,
-        markers: vec![
-            Marker { x: 200.0, y: 200.0, angle: 0.0 },
-            Marker { x: 300.0, y: 200.0, angle: PI / 2.0 },
-        ],
-    };
+    let app = frame_main::BoxGaz::default();
 
     let native_options = eframe::NativeOptions::default();
     eframe::run_native("Map Alpha egui", native_options, Box::new(|_cc| Box::new(app)));
