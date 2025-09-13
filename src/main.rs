@@ -38,6 +38,7 @@ termes.
  */
 
 mod frame;
+mod simulation;
 
 use eframe::egui;
 use std::f32::consts::PI;
