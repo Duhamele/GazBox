@@ -39,9 +39,9 @@ impl Cell {
 
 }
 pub struct Cases{
-    pression : f64,
-    mass: f64,
-    temperature : f64,
+    pub(crate) pression : f64,
+    pub(crate) mass: f64,
+    pub(crate) temperature : f64,
 }
 impl Grid2D{
     pub fn where_case_try(&self, case_coordonne:(i32,i32))->Option<(i32,i32)>{

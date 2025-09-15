@@ -26,6 +26,13 @@ impl FrameSimulation {
                 self.offset += response.drag_delta();
                 ctx.request_repaint();
             }
+            if response.hovered() {
+                if ctx.input(|i| i.scroll_delta.y != 0.0) {
+                    let scroll = ctx.input(|i| i.scroll_delta.y);
+                    self.zoom *= (1.0 + scroll * 0.01).clamp(0.5, 5.0);
+                    ctx.request_repaint();
+                }
+            }
 
 
             let cell_size = self.zoom;
@@ -52,6 +59,16 @@ impl FrameSimulation {
                             );
 
                             painter.rect_filled(rect, 0.0, color);
+                            let id = ui.id().with((*x, *y, ix, iy));
+                            let response = ui.interact(rect, id, egui::Sense::hover());
+
+                            if response.hovered() {
+                                response.on_hover_ui(|ui| {
+                                    ui.label(format!("Température: {:.2}", c.temperature));
+                                    ui.label(format!("Pression: {:.2}", c.pression));
+                                    ui.label(format!("Masse: {:.2}", c.mass));
+                                });
+                            }
                         }
                     }
                 }
