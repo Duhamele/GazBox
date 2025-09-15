@@ -1,13 +1,10 @@
 /*
-Copyright ou © ou Copr. [nom de l'auteur personne physique ou nom de la
-personne morale lorsque le logiciel est créé sous un lien de subordination
-employé/employeur en ajoutant éventuellement en dessous "contributeur :
-[nom de la ou des personne(s) physique(s)]"], ([date de création]) 
+Copyright  Elie Duhamel
+15 septembre 2025
 
-[Adresse électronique de l'auteur ou des auteurs]
+elie.duhamel@kivas.fr
 
-Ce logiciel est un programme informatique servant à [rappeler les
-caractéristiques techniques de votre logiciel]. 
+Ce logiciel est un programme informatique servant à simuler des gaz.
 
 Ce logiciel est régi par la licence CeCILL soumise au droit français et
 respectant les principes de diffusion des logiciels libres. Vous pouvez
@@ -39,6 +36,7 @@ termes.
 
 mod frame;
 mod simulation;
+mod graphique;
 
 use eframe::egui;
 use std::f32::consts::PI;
