@@ -36,4 +36,4 @@ termes.
 
 
 mod gaz;
-mod tooltip;
+pub mod tooltip;

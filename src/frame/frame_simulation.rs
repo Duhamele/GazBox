@@ -9,7 +9,7 @@ Ce logiciel est un programme informatique servant à simuler des gaz.
 Ce logiciel est régi par la licence CeCILL soumise au droit français et
 respectant les principes de diffusion des logiciels libres. Vous pouvez
 utiliser, modifier et/ou redistribuer ce programme sous les conditions
-de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA 
+de la licence CeCILL telle que diffusée par le CEA, le CNRS et l'INRIA
 sur le site "http://www.cecill.info".
 
 En contrepartie de l'accessibilité au code source et des droits de copie,
@@ -20,28 +20,30 @@ titulaire des droits patrimoniaux et les concédants successifs.
 
 A cet égard  l'attention de l'utilisateur est attirée sur les risques
 associés au chargement,  à l'utilisation,  à la modification et/ou au
-développement et à la reproduction du logiciel par l'utilisateur étant 
-donné sa spécificité de logiciel libre, qui peut le rendre complexe à 
+développement et à la reproduction du logiciel par l'utilisateur étant
+donné sa spécificité de logiciel libre, qui peut le rendre complexe à
 manipuler et qui le réserve donc à des développeurs et des professionnels
 avertis possédant  des  connaissances  informatiques approfondies.  Les
 utilisateurs sont donc invités à charger  et  tester  l'adéquation  du
 logiciel à leurs besoins dans des conditions permettant d'assurer la
-sécurité de leurs systèmes et ou de leurs données et, plus généralement, 
-à l'utiliser et l'exploiter dans les mêmes conditions de sécurité. 
+sécurité de leurs systèmes et ou de leurs données et, plus généralement,
+à l'utiliser et l'exploiter dans les mêmes conditions de sécurité.
 
-Le fait que vous puissiez accéder à cet en-tête signifie que vous avez 
+Le fait que vous puissiez accéder à cet en-tête signifie que vous avez
 pris connaissance de la licence CeCILL, et que vous en avez accepté les
 termes.
  */
 
 
 use egui::{Context, };
+use crate::graphique::tooltip::{ManagerTooltip, Tooltip};
 use super::super::simulation::grid::Grid2D;
 
 pub struct FrameSimulation {
     offset: egui::Vec2,
     zoom:f32,
     grid: Grid2D,
+    manager_tooltip:ManagerTooltip,
 }
 impl Default for FrameSimulation {
     fn default() -> Self {
@@ -49,6 +51,7 @@ impl Default for FrameSimulation {
             offset: egui::Vec2::new(0.,0.),
             zoom: 10.0,
             grid: Grid2D::default(),
+            manager_tooltip:ManagerTooltip::default(),
         }
     }
 }
@@ -69,6 +72,8 @@ impl FrameSimulation {
                     self.zoom *= (1.0 + scroll * 0.01).clamp(0.5, 5.0);
                     ctx.request_repaint();
                 }
+                self.manager_tooltip.clear();
+
             }
 
 
@@ -101,16 +106,15 @@ impl FrameSimulation {
 
                             if response.hovered() {
                                 response.on_hover_ui(|ui| {
-                                    ui.label(format!("Température: {:.2}", c.temperature));
-                                    ui.label(format!("Pression: {:.2}", c.pression));
-                                    ui.label(format!("Masse: {:.2}", c.mass));
+                                    self.manager_tooltip.add(Tooltip::new(format!("Température: {:.2}", c.temperature)))
                                 });
+
                             }
                         }
                     }
                 }
             }
-
+            self.manager_tooltip.show(ui);
         });
     }
 }
