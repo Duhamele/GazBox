@@ -105,9 +105,8 @@ impl FrameSimulation {
                             let response = ui.interact(rect, id, egui::Sense::hover());
 
                             if response.hovered() {
-                                response.on_hover_ui(|ui| {
-                                    self.manager_tooltip.add(Tooltip::new(format!("Température: {:.2}", c.temperature)))
-                                });
+                                self.manager_tooltip.add(Tooltip::new(format!("Température: {:.2}", c.temperature)))
+
 
                             }
                         }

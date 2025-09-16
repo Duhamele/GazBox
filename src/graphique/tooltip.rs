@@ -56,7 +56,7 @@ impl Tooltip {
             pos,
             galley.size() + egui::vec2(8.0, 8.0),
         );
-        pos+=egui::vec2(0.,galley.size().y).into();
+        pos+=egui::vec2(0.,galley.size().y+8.).into();
         ui.painter().rect_filled(rect, 6.0, egui::Color32::from_rgba_premultiplied(0, 0, 0, 200));
         ui.painter().galley(rect.min + egui::vec2(4.0, 4.0), galley);
         pos
