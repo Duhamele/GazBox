@@ -37,6 +37,7 @@ termes.
 mod frame;
 mod simulation;
 mod graphique;
+mod data;
 
 use eframe::egui;
 use std::f32::consts::PI;

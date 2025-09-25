@@ -37,6 +37,7 @@ termes.
 
 use egui::{Context, };
 use crate::graphique::tooltip::{ManagerTooltip, Tooltip};
+use crate::simulation::data::ParamtreBoxGaz;
 use super::super::simulation::grid::Grid2D;
 
 pub struct FrameSimulation {
@@ -56,7 +57,7 @@ impl Default for FrameSimulation {
     }
 }
 impl FrameSimulation {
-    pub fn show(&mut self,ctx:&Context){
+    pub fn show(&mut self,ctx:&Context,param:&ParamtreBoxGaz){
         egui::CentralPanel::default().show(ctx, |ui|{
             let (response, painter) =
                 ui.allocate_painter(ui.available_size(), egui::Sense::drag());
@@ -114,6 +115,8 @@ impl FrameSimulation {
                 }
             }
             self.manager_tooltip.show(ui);
+
+
         });
     }
 }

@@ -40,9 +40,13 @@ use eframe::Frame;
 use egui::{Context, ViewportCommand};
 use egui;
 use crate::frame::frame_simulation::FrameSimulation;
+use crate::graphique::tooltip::{ManagerTooltip, Tooltip};
+use crate::simulation::data::ParamtreBoxGaz;
 
 pub struct BoxGaz{
     popup_quit: bool,
+    paramtresimulation:ParamtreBoxGaz,
+    
 
 
 
@@ -53,6 +57,7 @@ impl Default for BoxGaz {
     fn default() -> Self {
         BoxGaz{
             popup_quit: false,
+            paramtresimulation:ParamtreBoxGaz::default(),
             simulation:FrameSimulation::default(),
         }
     }
@@ -84,8 +89,12 @@ impl eframe::App for BoxGaz {
                 println!("Option 2 cliquée");
                 self.popup_quit = true;
             }
+            if ui.checkbox(&mut self.paramtresimulation.tooltip_show, "Tooltip").clicked() {
+                println!("Option 1 clique");
+                println!("{}",self.paramtresimulation.tooltip_show);
+            }
         });
-        self.simulation.show(ctx);
+        self.simulation.show(ctx,&self.paramtresimulation);
         
 
 
@@ -93,7 +102,8 @@ impl eframe::App for BoxGaz {
         if self.popup_quit {
             self.popup_quit(ctx);
         }
-
+        
         ctx.request_repaint();
+        
     }
 }
