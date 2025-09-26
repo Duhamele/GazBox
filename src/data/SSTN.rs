@@ -34,7 +34,7 @@ pris connaissance de la licence CeCILL, et que vous en avez accepté les
 termes.
  */
 use std::fmt::{write, Display, Formatter};
-use crate::data::time::{Duration, TimeBasic};
+use crate::data::time::{DurationBasic, TimeBasic};
 
 #[allow(non_camel_case_types)]
 #[derive(Debug)]
@@ -98,7 +98,7 @@ impl Display for SSTN_Duration {
         write!(f, "{}:{:02}:{:02}:{:02}:{:03}:{:03}:{:03}", days, hours, minutes, seconds, millis, micros, nano)
     }
 }
-impl Duration for SSTN_Duration {
+impl DurationBasic for SSTN_Duration {
     type Time = SSTN_Time;
 
     fn is_null(&self) -> bool {
@@ -113,17 +113,6 @@ impl Duration for SSTN_Duration {
         self.nano_sec <= 0
     }
 
-    fn add(&self, time: &Self::Time) -> Self::Time {
-        SSTN_Time{
-            nano_sec_ap:self.nano_sec+time.nano_sec_ap
-        }
-    }
-
-    fn sub(&self, time: &Self::Time) -> Self::Time {
-        SSTN_Time{
-            nano_sec_ap:time.nano_sec_ap-self.nano_sec
-        }
-    }
 }
 impl std::ops::Add for SSTN_Duration {
     type Output = SSTN_Duration;

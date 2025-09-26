@@ -34,7 +34,7 @@ pris connaissance de la licence CeCILL, et que vous en avez accepté les
 termes.
  */
 use std::fmt::{Debug, Display};
-use std::ops::{Add, AddAssign, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 pub trait TimeBasic:Sized+Debug+Display+ToString{
     type ErrorTime;
@@ -47,14 +47,38 @@ pub trait TimeOperateur<D>:TimeBasic
 + Add<D, Output = Self>
 +Sub<D, Output = Self>
 where
-    D: Duration<Time=Self>{}
-pub trait Duration:Debug+Display+ToString{
+    D: DurationBasic<Time=Self>{}
+
+pub trait TimeCmp:TimeBasic
++ PartialEq
++ PartialOrd
++Eq
++Ord{}
+pub trait Time<D>:TimeCmp+TimeOperateur<D>
+where D:DurationBasic<Time=Self>{}
+pub trait DurationBasic:Debug+Display+ToString+ Sized{
     type Time: TimeBasic;
     fn is_null(&self)->bool;
     fn is_positive(&self)->bool;
     fn is_negative(&self)->bool;
-    fn add(&self, time:& Self::Time) ->Self::Time;
-    fn sub(&self, time:& Self::Time) ->Self::Time;
-
-
 }
+pub trait DurationOperateur<Number>:DurationBasic
++Add
++AddAssign
++Sub
++SubAssign
++Mul<Number>
++MulAssign<Number>
++Div<Number>
++DivAssign<Number>
+where Number:Mul<Self,Output=Self>
+{}
+
+pub trait DurationCmp:DurationBasic
++Ord
++PartialOrd
++Eq
++PartialEq{}
+pub trait Duration<Number>:DurationOperateur<Number>
++DurationCmp
+where Number:Mul<Self,Output=Self>{}
