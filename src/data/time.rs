@@ -34,19 +34,22 @@ pris connaissance de la licence CeCILL, et que vous en avez accepté les
 termes.
  */
 use std::fmt::{Debug, Display};
+use std::ops::{Add, AddAssign, Sub, SubAssign};
 
-pub trait Time:Sized+Debug+Display+ToString{
+pub trait TimeBasic:Sized+Debug+Display+ToString{
     type ErrorTime;
     fn now_zero()->Self;
     fn try_str(string: String)->Result<Self,Self::ErrorTime>;
-
-    fn add<T >(& mut self,duration:&T)
-    where T:Duration<Time=Self>;
-    fn sub<T >(& mut self,duration:&T)
-    where T:Duration<Time=Self>;
 }
+pub trait TimeOperateur<D>:TimeBasic
++ AddAssign<D>
++ SubAssign<D>
++ Add<D, Output = Self>
++Sub<D, Output = Self>
+where
+    D: Duration<Time=Self>{}
 pub trait Duration:Debug+Display+ToString{
-    type Time:Time;
+    type Time: TimeBasic;
     fn is_null(&self)->bool;
     fn is_positive(&self)->bool;
     fn is_negative(&self)->bool;

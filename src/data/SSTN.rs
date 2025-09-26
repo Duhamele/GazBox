@@ -34,10 +34,11 @@ pris connaissance de la licence CeCILL, et que vous en avez accepté les
 termes.
  */
 use std::fmt::{write, Display, Formatter};
-use crate::data::time::{Duration, Time};
+use crate::data::time::{Duration, TimeBasic};
 
+#[allow(non_camel_case_types)]
 #[derive(Debug)]
-struct SSTN_Time{
+pub struct SSTN_Time{
     nano_sec_ap:i64
 }
 impl Display for SSTN_Time {
@@ -59,7 +60,7 @@ impl Display for SSTN_Time {
         write!(f, "{}:{:02}:{:02}:{:02}:{:03}:{:03}:{:03}", days, hours, minutes, seconds, millis, micros, nano)
     }
 }
-impl Time for SSTN_Time{
+impl TimeBasic for SSTN_Time{
     type ErrorTime = ();
 
     fn now_zero() -> Self {
@@ -67,20 +68,107 @@ impl Time for SSTN_Time{
     }
 
     fn try_str(string: String) -> Result<Self, Self::ErrorTime> {
-        todo!()
+        panic!("not yet implemented")
+
     }
 
-    fn add<T>(&mut self, duration: &T)
-    where
-        T: Duration<Time=Self>
-    {
-        let _ = std::mem::replace(self, duration.add(self));
+
+}
+#[allow(non_camel_case_types)]
+#[derive(Debug)]
+pub struct SSTN_Duration {
+    nano_sec:i64
+}
+impl Display for SSTN_Duration {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut time=self.nano_sec;
+        let nano=time%1000;
+        time/=1000;
+        let micros=time%1000;
+        time/=1000;
+        let millis=time%1000;
+        time/=1000;
+        let seconds=time%60;
+        time/=60;
+        let minutes=time%60;
+        time/=60;
+        let hours=time%24;
+        time/=24;
+        let days=time;
+        write!(f, "{}:{:02}:{:02}:{:02}:{:03}:{:03}:{:03}", days, hours, minutes, seconds, millis, micros, nano)
+    }
+}
+impl Duration for SSTN_Duration {
+    type Time = SSTN_Time;
+
+    fn is_null(&self) -> bool {
+        self.nano_sec == 0
     }
 
-    fn sub<T>(&mut self, duration: &T)
-    where
-        T: Duration<Time=Self>
-    {
-        let _ = std::mem::replace(self, duration.sub(self));
+    fn is_positive(&self) -> bool {
+        self.nano_sec >= 0
+    }
+
+    fn is_negative(&self) -> bool {
+        self.nano_sec <= 0
+    }
+
+    fn add(&self, time: &Self::Time) -> Self::Time {
+        SSTN_Time{
+            nano_sec_ap:self.nano_sec+time.nano_sec_ap
+        }
+    }
+
+    fn sub(&self, time: &Self::Time) -> Self::Time {
+        SSTN_Time{
+            nano_sec_ap:time.nano_sec_ap-self.nano_sec
+        }
+    }
+}
+impl std::ops::Add for SSTN_Duration {
+    type Output = SSTN_Duration;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self{
+            nano_sec: self.nano_sec + rhs.nano_sec
+        }
+    }
+}
+impl std::ops::Sub for SSTN_Duration {
+    type Output = SSTN_Duration;
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self{
+            nano_sec: self.nano_sec - rhs.nano_sec
+        }
+    }
+}
+impl<Rhs> std::ops::Div<Rhs> for SSTN_Duration
+    where Rhs: Into<i64> {
+    type Output = SSTN_Duration;
+
+    fn div(self, rhs: Rhs) -> Self::Output {
+        Self{
+            nano_sec: self.nano_sec / rhs.into()
+        }
+    }
+}
+impl<Rhs> std::ops::Mul<Rhs> for SSTN_Duration
+where Rhs: Into<i64> {
+    type Output = SSTN_Duration;
+    fn mul(self, rhs: Rhs) -> Self::Output {
+        Self{
+            nano_sec: self.nano_sec * rhs.into()
+        }
+    }
+}
+struct TypeName<T>(T);
+impl<Lhs> std::ops::Mul<SSTN_Duration> for TypeName<Lhs>
+    where Lhs: Into<i64>+Copy {
+    type Output = SSTN_Duration;
+
+    fn mul(self, rhs: SSTN_Duration) -> Self::Output {
+        SSTN_Duration{
+            nano_sec:self.0.into() * rhs.nano_sec
+        }
     }
 }
