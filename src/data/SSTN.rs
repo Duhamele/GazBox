@@ -33,8 +33,10 @@ Le fait que vous puissiez accéder à cet en-tête signifie que vous avez
 pris connaissance de la licence CeCILL, et que vous en avez accepté les
 termes.
  */
+use std::cmp::Ordering;
 use std::fmt::{write, Display, Formatter};
-use crate::data::time::{DurationBasic, TimeBasic};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use crate::data::time::{DurationBasic, DurationCmp, DurationOperateur, Time, TimeBasic, TimeCmp, TimeOperateur};
 
 #[allow(non_camel_case_types)]
 #[derive(Debug)]
@@ -74,8 +76,70 @@ impl TimeBasic for SSTN_Time{
 
 
 }
+
+impl PartialEq for SSTN_Time {
+    fn eq(&self, other: &Self) -> bool {
+        self.nano_sec_ap == other.nano_sec_ap
+    }
+}
+
+impl PartialOrd for SSTN_Time {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.nano_sec_ap.partial_cmp(&other.nano_sec_ap)
+    }
+}
+
+impl Eq for SSTN_Time {}
+
+impl Ord for SSTN_Time {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.nano_sec_ap.cmp(&other.nano_sec_ap)
+    }
+}
+
+impl TimeCmp for SSTN_Time {
+
+
+}
+
+impl AddAssign<SSTN_Duration> for SSTN_Time {
+    fn add_assign(&mut self, rhs: SSTN_Duration) {
+        self.nano_sec_ap+=rhs.nano_sec
+    }
+}
+
+impl SubAssign<SSTN_Duration> for SSTN_Time {
+    fn sub_assign(&mut self, rhs: SSTN_Duration) {
+        self.nano_sec_ap-=rhs.nano_sec
+    }
+}
+
+impl Add<SSTN_Duration> for SSTN_Time {
+    type Output = SSTN_Time;
+
+    fn add(self, rhs: SSTN_Duration) -> Self::Output {
+        Self{nano_sec_ap:self.nano_sec_ap + rhs.nano_sec}
+    }
+}
+
+impl Sub<SSTN_Duration> for SSTN_Time {
+    type Output = SSTN_Time;
+
+    fn sub(self, rhs: SSTN_Duration) -> Self::Output {
+        Self{nano_sec_ap:self.nano_sec_ap - rhs.nano_sec}
+    }
+}
+
+impl TimeOperateur<SSTN_Duration> for SSTN_Time {
+
+}
+impl Time<SSTN_Duration> for SSTN_Time {
+
+}
 #[allow(non_camel_case_types)]
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialOrd)]
+#[derive(Ord)]
+#[derive(PartialEq)]
 pub struct SSTN_Duration {
     nano_sec:i64
 }
@@ -114,50 +178,114 @@ impl DurationBasic for SSTN_Duration {
     }
 
 }
-impl std::ops::Add for SSTN_Duration {
+
+impl DurationCmp for SSTN_Duration  {
+
+}
+
+impl Add for SSTN_Duration {
     type Output = SSTN_Duration;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Self{
-            nano_sec: self.nano_sec + rhs.nano_sec
-        }
+        SSTN_Duration{nano_sec:self.nano_sec + rhs.nano_sec}
     }
 }
-impl std::ops::Sub for SSTN_Duration {
+
+impl AddAssign for SSTN_Duration {
+    fn add_assign(&mut self, rhs: Self) {
+        self.nano_sec+=rhs.nano_sec
+    }
+}
+
+impl Sub for SSTN_Duration {
     type Output = SSTN_Duration;
+
     fn sub(self, rhs: Self) -> Self::Output {
-        Self{
-            nano_sec: self.nano_sec - rhs.nano_sec
-        }
+        SSTN_Duration{nano_sec:self.nano_sec - rhs.nano_sec}
     }
 }
-impl<Rhs> std::ops::Div<Rhs> for SSTN_Duration
-    where Rhs: Into<i64> {
+
+impl SubAssign for SSTN_Duration {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.nano_sec-=rhs.nano_sec
+    }
+}
+impl Mul<i32> for SSTN_Duration {
+    type Output = SSTN_Duration;
+    fn mul(self, rhs: i32) -> Self::Output {
+        SSTN_Duration{nano_sec: self.nano_sec * rhs as i64}
+    }
+
+}
+
+
+
+impl MulAssign<i32> for SSTN_Duration {
+    fn mul_assign(&mut self, rhs: i32) {
+        self.nano_sec*=rhs as i64
+    }
+}
+
+impl Div<i32> for SSTN_Duration {
     type Output = SSTN_Duration;
 
-    fn div(self, rhs: Rhs) -> Self::Output {
-        Self{
-            nano_sec: self.nano_sec / rhs.into()
-        }
+    fn div(self, rhs: i32) -> Self::Output {
+        Self::Output{nano_sec: self.nano_sec / rhs as i64}
     }
 }
-impl<Rhs> std::ops::Mul<Rhs> for SSTN_Duration
-where Rhs: Into<i64> {
-    type Output = SSTN_Duration;
-    fn mul(self, rhs: Rhs) -> Self::Output {
-        Self{
-            nano_sec: self.nano_sec * rhs.into()
-        }
-    }
-}
-struct TypeName<T>(T);
-impl<Lhs> std::ops::Mul<SSTN_Duration> for TypeName<Lhs>
-    where Lhs: Into<i64>+Copy {
-    type Output = SSTN_Duration;
 
+impl DivAssign<i32> for SSTN_Duration {
+    fn div_assign(&mut self, rhs: i32) {
+        self.nano_sec/=rhs as i64
+    }
+}
+impl Mul<SSTN_Duration> for i32 {
+    type Output = SSTN_Duration;
     fn mul(self, rhs: SSTN_Duration) -> Self::Output {
-        SSTN_Duration{
-            nano_sec:self.0.into() * rhs.nano_sec
-        }
+        SSTN_Duration{nano_sec:self as i64 * rhs.nano_sec}
     }
+}
+impl DurationOperateur<i32> for SSTN_Duration {
+
+}
+
+
+
+impl Mul<i64> for SSTN_Duration {
+    type Output = SSTN_Duration;
+
+    fn mul(self, rhs: i64) -> Self::Output {
+        SSTN_Duration{nano_sec: self.nano_sec * rhs}
+    }
+}
+
+impl MulAssign<i64> for SSTN_Duration {
+    fn mul_assign(&mut self, rhs: i64) {
+        self.nano_sec*=rhs
+    }
+}
+
+impl Div<i64> for SSTN_Duration {
+    type Output = SSTN_Duration;
+
+    fn div(self, rhs: i64) -> Self::Output {
+        SSTN_Duration{nano_sec: self.nano_sec / rhs}
+    }
+}
+
+impl DivAssign<i64> for SSTN_Duration {
+    fn div_assign(&mut self, rhs: i64) {
+        self.nano_sec/=rhs
+    }
+}
+impl Mul<SSTN_Duration> for i64 {
+    type Output = SSTN_Duration;
+    fn mul(self, rhs: SSTN_Duration) -> Self::Output {
+        SSTN_Duration{nano_sec: self * rhs.nano_sec}
+    }
+
+}
+
+impl DurationOperateur<i64> for SSTN_Duration {
+
 }
