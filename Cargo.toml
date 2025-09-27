@@ -38,7 +38,7 @@
 name = "GazBox"
 version = "0.0.1"
 edition = "2024"
-
+license = "CECILL-2.1"
 [dependencies]
 eframe = "0.24"
 egui = "0.24"

@@ -289,3 +289,27 @@ impl Mul<SSTN_Duration> for i64 {
 impl DurationOperateur<i64> for SSTN_Duration {
 
 }
+#[allow(non_camel_case_types)]
+#[derive(Debug)]
+pub struct SSTN_Duration_f{
+    nano_sec:f64
+}
+impl Display for SSTN_Duration_f {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut time=self.nano_sec;
+        let nano=time%1000.0;
+        time/=1000.0;
+        let micros=time%1000.;
+        time/=1000.;
+        let millis=time%1000.;
+        time/=1000.;
+        let seconds=time%60.;
+        time/=60.;
+        let minutes=time%60.;
+        time/=60.;
+        let hours=time%24.;
+        time/=24.;
+        let days=time;
+        write!(f, "{}:{:02}:{:02}:{:02}:{:03}:{:03}:{:03}", days, hours, minutes, seconds, millis, micros, nano)
+    }
+}
